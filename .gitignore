@@ -1,0 +1,6 @@
+__pycache__/
+.venv/
+.env
+cache/
+app/core/search.py
+app/core/utils.py
