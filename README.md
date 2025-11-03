@@ -82,15 +82,19 @@ pip install -r requirements.txt
 ```
 
 ### Create a .env File
+```bash
 GROQ_API_KEY=your_groq_api_key
+```
 
 ### Run the Server
+```bash
 uvicorn app.main:app --reload
-
+```
 
 ### Test Locally
+```bash
 curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{"message": "Explain useState in React"}'
-
+```
 
 ## 🏁 Credits
 
