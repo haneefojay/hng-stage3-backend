@@ -11,8 +11,18 @@ router = APIRouter(tags=["Telex Webhook"])
 async def telex_webhook(request: Request):
     try:
         data = await request.json()
-        user_message = data.get("message") or data.get("text") or ""
-        channel_id = str(data.get("channel_id", "default"))  # Telex chat channel or fallback
+        user_message = (
+            data.get("message")
+            or data.get("text")
+            or data.get("content")
+            or data.get("event", {}).get("text")
+            or ""
+        )
+        channel_id = str(
+            data.get("channel_id")
+            or data.get("event", {}).get("channel_id")
+            or "default"
+        )
 
         if not user_message:
             return build_response("❌ No message received.")
