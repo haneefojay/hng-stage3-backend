@@ -12,45 +12,35 @@ async def telex_webhook(request: Request):
     try:
         data = await request.json()
         user_message = (
-            data.get("message")
-            or data.get("text")
-            or data.get("content")
-            or data.get("event", {}).get("text")
-            or ""
+            data.get("event", {}).get("message", {}).get("text")
+            or data.get("message", "")
+            or data.get("text", "")
         )
-        channel_id = str(
-            data.get("channel_id")
-            or data.get("event", {}).get("channel_id")
-            or "default"
-        )
+
+        channel_id = str(data.get("event", {}).get("channel", {}).get("id", "default"))
+
 
         if not user_message:
-            return build_response("❌ No message received.")
+            return build_response("No message received.")
 
-        # Save user message to memory
         add_to_memory(channel_id, "user", user_message)
 
-        # Get conversation context
         history = get_memory(channel_id)
 
-        # Generate LLM response
         response = await query_llm(user_message, history=history)
 
         if not response:
-            return build_response("⚠️ DocuLens couldn’t find a suitable explanation. Try again later.")
+            return build_response("DocuLens couldn’t find a suitable explanation. Try again later.")
 
-        # Summarize if needed (for long responses)
         response_summary = await summarize_text(response)
 
-        # Save assistant response to memory
         add_to_memory(channel_id, "assistant", response_summary)
 
-        # Return Telex message
-        message = f"📘 **DocuLens AI Response:**\n\n{response_summary}"
+        message = f"**DocuLens AI Response:**\n\n{response_summary}"
         return build_response(message)
 
     except Exception as e:
-        return build_response(f"⚠️ Internal Error: {str(e)}")
+        return build_response(f" Internal Error: {str(e)}")
 
 
 @router.post("/query")
