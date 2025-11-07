@@ -7,7 +7,7 @@ from app.core.memory import add_to_memory, get_memory
 
 router = APIRouter(tags=["Telex Webhook"])
 
-@router.post("/")
+@router.post("/a2a/agent/doculens")
 async def telex_webhook(request: Request):
     try:
         data = await request.json()
@@ -21,7 +21,11 @@ async def telex_webhook(request: Request):
 
 
         if not user_message:
-            return build_response("No message received.")
+            return {
+                "response_type": "message",
+                "text": "No message received."
+            }
+
 
         add_to_memory(channel_id, "user", user_message)
 
@@ -30,17 +34,27 @@ async def telex_webhook(request: Request):
         response = await query_llm(user_message, history=history)
 
         if not response:
-            return build_response("DocuLens couldn’t find a suitable explanation. Try again later.")
-
+            return {
+                "response_type": "message",
+                "text": "DocuLens couldn’t find a suitable explanation. Try again later."
+            }
+        
         response_summary = await summarize_text(response)
 
         add_to_memory(channel_id, "assistant", response_summary)
 
         message = f"**DocuLens AI Response:**\n\n{response_summary}"
-        return build_response(message)
+        
+        return {
+            "response_type": "message",
+            "text": message
+        }
 
     except Exception as e:
-        return build_response(f" Internal Error: {str(e)}")
+        return {
+            "response_type": "message",
+            "text": f" Internal Error: {str(e)}"
+        }
 
 
 @router.post("/query")

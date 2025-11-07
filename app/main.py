@@ -7,7 +7,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.include_router(telex_router, prefix="/webhook")
+app.include_router(telex_router)
 
 @app.get("/")
 def root():
