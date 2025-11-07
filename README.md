@@ -25,10 +25,6 @@ Instead of manually searching docs, DocuLens uses an **LLM-powered engine** to g
 ✅ **Error-Resilient** — Graceful fallbacks and consistent JSON responses  
 ✅ **Telex.im Integration** — Responds directly to users in Telex workspaces
 
----
-
-## 🏗️ Architecture
-
 
 ---
 
